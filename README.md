@@ -1,3 +1,4 @@
-# sourcecheck_node
+# sourcecheck_api
+Primary Repo for the Sourcecheck API.
 
-a [Sails](http://sailsjs.org) application
+ToDo: Fill out the Readme.

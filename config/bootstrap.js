@@ -21,22 +21,15 @@ module.exports.bootstrap = function (cb) {
 // After we create our sources, we will store them here to associate with our organizations
 var storeSources = []; 
 
-var sources = [{host: 'advance.net'},{host: 'yahoo.com'},{host: 'tumblr.com'},{host: 'condenast.co.uk'},{host: 'www.reddit.com'},{host: 'reddit.com'},{host: 'm.bbc.co.uk'},{host: 'bbc.co.uk'}];
+var sources = [{host: 'yahoo.com'},{host: 'tumblr.com'},{host: 'condenast.co.uk'},{host: 'www.reddit.com'},{host: 'reddit.com'},{host: 'advance.net'},{host: 'm.bbc.co.uk'},{host: 'bbc.co.uk'}];
 var organizations = [{ name: 'Reddit'}, { name: 'Yahoo'}, { name: 'Tumblr'}, { name: 'Advance Publications'}, { name: 'Condé Nast'}, { name: 'British Broadcasting Corporation'}];
 
 // This does the actual associating.
 // It takes one Organization then iterates through the array of newly created Sources, adding each one to it's join table
+
 var associateSources = function(oneOrganization,cb){
   var thisOrganization = oneOrganization;
   var callback = cb;
-
-//Ownership: This is a self association.
-if (thisOrganization.name == "Condé Nast") {
-	Organization.findOne({name:"Advance Publications"}).exec(function(error, org){
-		Organization.update({id: thisOrganization.id}, {owned_by: org.id}).exec(function(){console.log("Ownership Set")});
-		Organization.update({id: org.id}, {owns: thisOrganization.id}).exec(function(){console.log("Ownership Set")});
-	});
-}
 
   storeSources.forEach(function(thisSource,index){
   	switch(thisSource.host) {
@@ -91,13 +84,19 @@ if (thisOrganization.name == "Condé Nast") {
 // This callback is run after all of the Organizations are created.
 // It sends each new pet to 'associate' with our Sources  
 var afterOrganization = function(err,newOrganizations){
+  var cond = _.find(newOrganizations, { 'name': 'Condé Nast' }, 'organization');
+  var adv = _.find(newOrganizations, { 'name': 'Advance Publications' }, 'organization');
+  cond.owners.add(adv);
+  cond.save(console.log);
+
   while (newOrganizations.length){
     var thisOrganization = newOrganizations.pop();
     var callback = function(organizationID){
-      console.log('Done with organization ',organizationID)
+      console.log('Done with organization ',organizationID);
     }
-    associateSources(thisOrganization,callback)
+	associateSources(thisOrganization,callback);
   }
+
   console.log('Sourcechek API Bootstrapped!! Exiting.');
 
   // This callback lets us leave bootstrap.js and continue lifting our app!

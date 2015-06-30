@@ -20,11 +20,12 @@ module.exports = {
 	    //Self association because we can be owned or own
 	    owns : {
 	    	collection: 'organization',
-	    	via: 'owned_by',
+	    	via: 'owners',
 	        dominant: true
 	    },
 
-	    owned_by : {
+	    //Owners or Stakeholders 
+	    owners : {
 	    	collection: 'organization',
 	    	via: 'owns'
 	    }

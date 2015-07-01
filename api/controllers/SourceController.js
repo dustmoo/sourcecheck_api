@@ -7,7 +7,5 @@
 
 module.exports = {
 	//Main info API Call
-	}
-	
 };
 
